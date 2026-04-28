@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Book Tickets - Local Theater</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* CSS STYLES INCLUDED HERE */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #141414, #1f1f1f);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background-color: #111;
+      padding: 2rem 1rem;
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: #e50914;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px #e50914aa;
+      user-select: none;
+      box-shadow: 0 3px 10px #e5091470;
+      transition: transform 0.3s ease;
+    }
+    header:hover { transform: scale(1.05); }
+
+    nav {
+      background-color: #1b1b1b;
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      padding: 1.2rem 0;
+      box-shadow: inset 0 -2px 6px #e5091422;
+      user-select: none;
+    }
+    nav a {
+      color: #eee;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    }
+    nav a:hover, nav a:focus {
+      background: #e50914;
+      color: #fff;
+      box-shadow: 0 0 15px #e50914aa;
+      transform: translateY(-3px);
+    }
+    nav a.active {
+      background: #e50914cc;
+      box-shadow: 0 0 20px #e50914dd;
+      pointer-events: none;
+    }
+
+    .nav-container { position: relative; }
+    .hamburger {
+      display: none;
+      font-size: 2rem;
+      cursor: pointer;
+      color: #fff;
+      padding: 0.8rem 1rem;
+      position: absolute;
+      right: 0.5rem;
+      top: 0.2rem;
+      z-index: 1001;
+    }
+
+    main {
+      max-width: 480px;
+      margin: 3rem auto;
+      padding: 2rem;
+      background: rgba(34, 34, 34, 0.85);
+      border-radius: 14px;
+      box-shadow: 0 0 30px #e5091477;
+      backdrop-filter: blur(8px);
+    }
+
+    h2 {
+      color: #e50914;
+      font-size: 2.1rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      text-shadow: 0 0 6px #e50914bb;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    select, input[type="date"], input[type="number"] {
+      padding: 0.75rem 1.2rem;
+      border-radius: 8px;
+      background-color: #2e2e2e;
+      color: #f0f0f0;
+      border: 2px solid transparent;
+      margin-bottom: 1.5rem;
+      font-size: 1.1rem;
+    }
+
+    select:focus, input[type="date"]:focus, input[type="number"]:focus {
+      border-color: #e50914;
+      background-color: #3a3a3a;
+      box-shadow: 0 0 10px #e50914cc;
+      outline: none;
+    }
+
+    button {
+      background-color: #e50914;
+      padding: 1rem 1.8rem;
+      color: #fff;
+      font-size: 1.2rem;
+      font-weight: 700;
+      cursor: pointer;
+      border-radius: 8px;
+      border: none;
+      box-shadow: 0 6px 16px #e5091422;
+      text-transform: uppercase;
+    }
+
+    button:hover {
+      background-color: #b0070f;
+      box-shadow: 0 8px 20px #b0070fbb;
+      transform: translateY(-2px);
+    }
+
+    .error-message {
+      color: #ff4c4c;
+      font-size: 0.9rem;
+      margin-top: -1rem;
+      margin-bottom: 1.2rem;
+      font-weight: 600;
+      opacity: 0;
+      height: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .error-message.visible {
+      opacity: 1;
+      height: auto;
+    }
+
+    #priceDisplay {
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: #f0f0f0;
+      margin-top: -1rem;
+      margin-bottom: 1.5rem;
+      text-align: right;
+      text-shadow: 0 0 4px #e50914aa;
+    }
+
+    #successModal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: #1b1b1b;
+      padding: 2rem 3rem;
+      border-radius: 16px;
+      box-shadow: 0 0 50px #e50914cc;
+      color: #fff;
+      text-align: center;
+      z-index: 1000;
+      transition: transform 0.4s ease;
+    }
+
+    #successModal.show {
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    #modalOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0,0,0,0.7);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 900;
+    }
+
+    #modalOverlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    footer {
+      background-color: #111;
+      color: #999;
+      text-align: center;
+      padding: 1.2rem 1rem;
+      font-size: 1rem;
+      margin-top: auto;
+    }
+
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: column;
+        display: none;
+        position: absolute;
+        top: 55px;
+        width: 100%;
+      }
+      nav.active {
+        display: flex;
+      }
+      .hamburger {
+        display: block;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>Book Your Tickets</header>
+
+<div class="nav-container">
+  <div class="hamburger" id="hamburger">☰</div>
+  <nav id="main-nav">
+    <a href="index.html">Home</a>
+    <a href="contact.html">Contact</a>
+    <a href="book.html" class="active">Book Tickets</a>
+  </nav>
+</div>
+
+<main>
+  <h2>Reserve Your Seat</h2>
+  <form id="bookingForm" novalidate>
+    <label for="movie">Select Movie</label>
+    <select id="movie" name="movie" required>
+      <option value="" disabled selected>Select a movie</option>
+      <option value="Lunana: A Yak in the Classroom">Lunana: A Yak in the Classroom</option>
+      <option value="The Monk and The Gun">The Monk and The Gun</option>
+      <option value="Lucky Baska">Lucky Baska</option>
+      <option value="Dragon">Dragon</option>
+      <option value="High & Low Worst">High & Low Worst</option>
+      <option value="One Piece Red">One Piece Red</option>
+      <option value="Doraemon Stand By Me 2">Doraemon Stand By Me 2</option>
+      <option value="Pushpa 2: The Rule">Pushpa 2: The Rule</option>
+    </select>
+    <div id="movieError" class="error-message"></div>
+
+    <label for="date">Date</label>
+    <input type="date" id="date" name="date" required />
+    <div id="dateError" class="error-message"></div>
+
+    <label for="tickets">Number of Tickets</label>
+    <input type="number" id="tickets" name="tickets" required min="1" max="10" value="1" />
+    <div id="ticketsError" class="error-message"></div>
+
+    <div id="priceDisplay">Total Price: ₹0</div>
+
+    <button type="submit">Book Now</button>
+  </form>
+</main>
+
+<footer>
+  &copy; 2025 Local Theater. All rights reserved.
+</footer>
+
+<div id="modalOverlay"></div>
+<div id="successModal" role="dialog">
+  <div id="modalTitle">Booking Confirmed!</div>
+  <p id="modalMessage"></p>
+  <button id="closeModalBtn">Close</button>
+</div>
+
+<script>
+  const dateInput = document.getElementById('date');
+  const today = new Date().toISOString().split('T')[0];
+  dateInput.setAttribute('min', today);
+
+  const moviePrices = {
+    "Lunana: A Yak in the Classroom": 300,
+    "The Monk and The Gun": 300,
+    "Lucky Baska": 300,
+    "Dragon": 300,
+    "High & Low Worst": 300,
+    "One Piece Red": 300,
+    "Doraemon Stand By Me 2": 300,
+    "Pushpa 2: The Rule": 300  
+  };
+
+  const form = document.getElementById('bookingForm');
+  const movieSelect = document.getElementById('movie');
+  const ticketsInput = document.getElementById('tickets');
+  const priceDisplay = document.getElementById('priceDisplay');
+
+  const movieError = document.getElementById('movieError');
+  const dateError = document.getElementById('dateError');
+  const ticketsError = document.getElementById('ticketsError');
+
+  const modal = document.getElementById('successModal');
+  const overlay = document.getElementById('modalOverlay');
+  const modalMessage = document.getElementById('modalMessage');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+
+  function formatPrice(amount) {
+    return ₹${amount.toFixed(2)};
+  }
+
+  function updatePrice() {
+    const movie = movieSelect.value;
+    const tickets = parseInt(ticketsInput.value, 10);
+    if (movie && tickets > 300) {
+      const total = moviePrices[movie] * tickets;
+      priceDisplay.textContent = Total Price: ${formatPrice(total)};
+    } else {
+      priceDisplay.textContent = 'Total Price: ₹0';
+    }
+  }
+
+  function validate() {
+    let isValid = true;
+
+    if (!movieSelect.value) {
+      movieError.textContent = 'Please select a movie.';
+      movieError.classList.add('visible');
+      isValid = false;
+    } else {
+      movieError.textContent = '';
+      movieError.classList.remove('visible');
+    }
+
+    if (!dateInput.value) {
+      dateError.textContent = 'Please select a date.';
+      dateError.classList.add('visible');
+      isValid = false;
+    } else {
+      dateError.textContent = '';
+      dateError.classList.remove('visible');
+    }
+
+    const tickets = parseInt(ticketsInput.value, 10);
+    if (!tickets || tickets < 1 || tickets > 10) {
+      ticketsError.textContent = 'Enter 1 to 10 tickets.';
+      ticketsError.classList.add('visible');
+      isValid = false;
+    } else {
+      ticketsError.textContent = '';
+      ticketsError.classList.remove('visible');
+    }
+
+    return isValid;
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (validate()) {
+      const movie = movieSelect.value;
+      const date = dateInput.value;
+      const tickets = ticketsInput.value;
+      const total = formatPrice(moviePrices[movie] * tickets);
+      modalMessage.textContent = You have booked ${tickets} ticket(s) for "${movie}" on ${date}. Total: ${total};
+      modal.classList.add('show');
+      overlay.classList.add('show');
+    }
+  });
+
+  closeModalBtn.addEventListener('click', () => {
+    modal.classList.remove('show');
+    overlay.classList.remove('show');
+    form.reset();
+    updatePrice();
+  });
+
+  movieSelect.addEventListener('change', updatePrice);
+  ticketsInput.addEventListener('input', updatePrice);
+
+  const hamburger = document.getElementById('hamburger');
+  const nav = document.getElementById('main-nav');
+  hamburger.addEventListener('click', () => nav.classList.toggle('active'));
+</script>
+</body>
+</html>
